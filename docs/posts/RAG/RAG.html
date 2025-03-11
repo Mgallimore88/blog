@@ -177,9 +177,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<section id="simple-rag-example" class="level3">
-<h3 class="anchored" data-anchor-id="simple-rag-example">Simple RAG Example</h3>
-<p>Retreival Augmented Generation</p>
+<section id="simple-rag-example" class="level1">
+<h1>Simple RAG Example</h1>
+<section id="retreival-augmented-generation" class="level3">
+<h3 class="anchored" data-anchor-id="retreival-augmented-generation">Retreival Augmented Generation</h3>
+<p>Thank you Ben Clavié for getting me started on this path.</p>
 <p>https://parlance-labs.com/education/rag/ben.html</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -196,117 +198,176 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>creating an embedding from a prompt</li>
 <li>creating embeddings from sections of a document</li>
 <li>finding the cosine similarity between the prompt and each section of the document.</li>
+<li>providing those most relevant sections of the document to a generative model to generate an answer.</li>
 </ol>
 <p>-Once the paragraph with the hightest cosine similarity to the prompt is found, the top 3 sentences are fed into a generative model to generate an answer.</p>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># %pip install -U sentence-transformers</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># $pip install wikipedia-api</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># %pip install claudette</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># %pip install wikipedia-api</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># %pip install claudette</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># %pip install ollama</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># !ollama pull deepseek-r1:1.5b</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> wikipediaapi <span class="im">import</span> Wikipedia</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> claudette <span class="im">import</span> Chat, models</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/Users/mikeg/miniforge3/envs/ai/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
-  from .autonotebook import tqdm as notebook_tqdm</code></pre>
-</div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> claudette <span class="im">import</span> Chat, models</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ollama</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>I got the model list from here https://www.sbert.net/docs/sentence_transformer/pretrained_models.html</p>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> SentenceTransformer(<span class="st">'Alibaba-NLP/gte-base-en-v1.5'</span>, trust_remote_code<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> SentenceTransformer(<span class="st">'Alibaba-NLP/gte-base-en-v1.5'</span>, trust_remote_code<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>SentenceTransformer(
+  (0): Transformer({'max_seq_length': 8192, 'do_lower_case': False}) with Transformer model: NewModel 
+  (1): Pooling({'word_embedding_dimension': 768, 'pooling_mode_cls_token': True, 'pooling_mode_mean_tokens': False, 'pooling_mode_max_tokens': False, 'pooling_mode_mean_sqrt_len_tokens': False, 'pooling_mode_weightedmean_tokens': False, 'pooling_mode_lasttoken': False, 'include_prompt': True})
+)</code></pre>
+</div>
 </div>
 </section>
 <section id="fetch-some-text-content-and-embed-it" class="level3">
 <h3 class="anchored" data-anchor-id="fetch-some-text-content-and-embed-it">Fetch some text content and embed it</h3>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>wiki <span class="op">=</span> Wikipedia(<span class="st">'RAGBot/0.0'</span>, <span class="st">'en'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> wiki.page(<span class="st">'Albert Einstein'</span>).text</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>paragraphs <span class="op">=</span> doc.split(<span class="st">'</span><span class="ch">\n\n</span><span class="st">'</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ... make embedding</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>docs_embed <span class="op">=</span> model.encode(paragraphs, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>wiki <span class="op">=</span> Wikipedia(<span class="st">'RAGBot/0.0'</span>, <span class="st">'en'</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> wiki.page(<span class="st">'Albert Einstein'</span>).text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="choose-which-chunks-to-split-the-document-into" class="level3">
+<h3 class="anchored" data-anchor-id="choose-which-chunks-to-split-the-document-into">Choose which chunks to split the document into</h3>
+<ul>
+<li>I chose to split the document into lines at the newline character.</li>
+<li>Other options would be paragraphs,</li>
+</ul>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>lines <span class="op">=</span> doc.split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... make embedding</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>docs_embed <span class="op">=</span> model.encode(lines, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>wiki.page(<span class="st">'Albert Einstein'</span>).text[:<span class="dv">100</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>'Albert Einstein (14 March 1879 – 18 April 1955) was a German-born theoretical physicist who is best '</code></pre>
+</div>
+</div>
+</section>
+<section id="the-embedding-has-768-dimensions." class="level3">
+<h3 class="anchored" data-anchor-id="the-embedding-has-768-dimensions.">The embedding has 768 dimensions.</h3>
+<p>Here’s an example of one of the embeddings - it is from the fourth line of the input text.</p>
+<p>Only the first 10 dimensions are shown for brevity, but the semantic content of line 4 is represented by the combination of all 768 dimensions.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>docs_embed[<span class="dv">4</span>].shape, docs_embed[<span class="dv">4</span>][:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>((768,),
+ array([ 0.01500533,  0.00550891,  0.04666482,  0.02964193,  0.03918857,
+        -0.00510483, -0.04217818, -0.03604467, -0.00913893, -0.0241353 ],
+       dtype=float32))</code></pre>
+</div>
 </div>
 </section>
 <section id="make-an-embedding-of-the-prompt-query" class="level3">
 <h3 class="anchored" data-anchor-id="make-an-embedding-of-the-prompt-query">Make an embedding of the prompt (query)</h3>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"What gave Einstein the chance to meet his fellow neuroanatomist Ramon?"</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>query_embed <span class="op">=</span> model.encode(query, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>query_embed.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<p>The query is also 768 dimensional since we used the same sentence transformer to create the embeddings.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"What were the circumstances which led Einstein to meet his fellow neuroanatomist Ramon?"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>query_embed <span class="op">=</span> model.encode(query, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>query_embed.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>(768,)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.dot(docs_embed, query_embed)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>similarities</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>array([0.5728152 , 0.47459427, 0.44192564, 0.47382304, 0.5413194 ,
-       0.43490496, 0.4756278 , 0.5182402 , 0.48718232, 0.41080484,
-       0.37724665, 0.57194126, 0.50365496, 0.46164155, 0.57233626,
-       0.5127679 , 0.52641445, 0.5398744 , 0.6040658 , 0.4396679 ,
-       0.47936997, 0.5163653 , 0.5112858 , 0.5028564 , 0.48975816,
-       0.40509236, 0.55507207, 0.5173719 , 0.47807235, 0.40626654,
-       0.3443527 , 0.39776003, 0.49057645, 0.5369898 , 0.33842805,
-       0.39533782, 0.31863862, 0.4034021 , 0.43526107, 0.42657036,
-       0.41576654, 0.44364488, 0.3890611 , 0.40116668, 0.50536174,
-       0.44676283, 0.3784415 , 0.44369176, 0.43291909, 0.42396727,
-       0.46925837, 0.37816215, 0.44824862, 0.48065543, 0.42301148,
-       0.37530896, 0.46815017, 0.4325635 , 0.3740057 , 0.53968686,
-       0.40272278, 0.37232846, 0.40951195, 0.42262912, 0.47417068,
-       0.46981564, 0.39782795, 0.31879896, 0.33717418], dtype=float32)</code></pre>
+<p><em>Each dimension in an embedding can be thought of as a direction in semantic space.</em></p>
+<p>If the dimensions of the prompt and a given line are different, then the dimensions won’t point in the same direction, and the resulting dot product will be small. If many of the dimensions line up, the dot product will be larger. By picking the line with the largest dot product, we are picking the line that is most similar to the prompt.</p>
+<p>Calculating the <a href="https://www.mathsisfun.com/algebra/vectors-dot-product.html">dot product</a> of all the line embeddings with the query embedding gives a similarity score between each line and the query. Again, just the first three similarities are shown for brevity, but there are acutally 308 similarities since there were 308 lines in the input text.</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.dot(docs_embed, query_embed)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"first 4 similarities: </span><span class="sc">{</span>similarities[:<span class="dv">4</span>]<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">index of maximum similarity: </span><span class="sc">{</span>similarities<span class="sc">.</span>argmax()<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">which is: </span><span class="sc">{</span>similarities<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>first 4 similarities: [0.50982666 0.49827662 0.43293458 0.44298065] 
+index of maximum similarity: 55 
+which is: 0.6418374180793762</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>top_3_idx <span class="op">=</span> np.argsort(similarities)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>But maybe there are other parts of the text which also contain relevant information. That’s a good reason to choose the top n similar lines and not just the first.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>top_3_idx <span class="op">=</span> np.argsort(similarities)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">3</span>]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>top_3_idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>array([55, 67, 42])</code></pre>
 </div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>top_3_idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
-<pre><code>array([18,  0, 14])</code></pre>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents <span class="op">=</span> [lines[idx] <span class="cf">for</span> idx <span class="kw">in</span> top_3_idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>["Einstein's decision to tour the eastern hemisphere in 1922 meant that he was unable to go to Stockholm in the December of that year to participate in the Nobel prize ceremony. His place at the traditional Nobel banquet was taken by a German diplomat, who gave a speech praising him not only as a physicist but also as a campaigner for peace. A two-week visit to Spain that he undertook in 1923 saw him collecting another award, a membership of the Spanish Academy of Sciences signified by a diploma handed to him by King Alfonso XIII. (His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)",
+ "Einstein next traveled to California, where he met Caltech president and Nobel laureate Robert A. Millikan. His friendship with Millikan was awkward, as Millikan had a penchant for patriotic militarism, where Einstein was a pronounced pacifist. During an address to Caltech's students, Einstein noted that science was often inclined to do more harm than good.",
+ 'In the spring of 1913, two German visitors, Max Planck and Walther Nernst, called upon Einstein in Zurich in the hope of persuading him to relocate to Berlin. They offered him membership of the Prussian Academy of Sciences, the directorship of the planned Kaiser Wilhelm Institute for Physics and a chair at the Humboldt University of Berlin that would allow him to pursue his research supported by a professorial salary but with no teaching duties to burden him. Their invitation was all the more appealing to him because Berlin happened to be the home of his latest girlfriend, Elsa Löwenthal. He duly joined the Academy on 24 July 1913, and moved into an apartment in the Berlin district of Dahlem on 1 April 1914. He was installed in his Humboldt University position shortly thereafter.']</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents <span class="op">=</span> [paragraphs[idx] <span class="cf">for</span> idx <span class="kw">in</span> top_3_idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> models[<span class="dv">2</span>]</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(llm, sp<span class="op">=</span><span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>chat(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<p>According to the information provided, Einstein’s 1923 visit to Spain gave him the chance to meet the fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal. The passage states:</p>
-<p>“(His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)”</p>
-<p>So Einstein’s 1923 trip to Spain provided him the opportunity to meet and interact with the Nobel laureate neuroanatomist Santiago Ramón y Cajal.</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> models[<span class="dv">2</span>]</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(llm, sp<span class="op">=</span><span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>chat(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<p>According to the information provided, Einstein’s 1923 visit to Spain gave him a chance to meet the fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal. The passage states:</p>
+<p>“A two-week visit to Spain that he undertook in 1923 saw him collecting another award, a membership of the Spanish Academy of Sciences signified by a diploma handed to him by King Alfonso XIII. (His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)”</p>
+<p>So the circumstances that led Einstein to meet the neuroanatomist Ramón y Cajal were Einstein’s 1923 visit to Spain, where he was awarded membership in the Spanish Academy of Sciences and had the opportunity to meet the fellow Nobel laureate Ramón y Cajal.</p>
 <details>
 <ul>
-<li>id: <code>msg_01Wu1ME2c2Chmg5x9Ej2Tohm</code></li>
-<li>content: <code>[{'text': 'According to the information provided, Einstein\'s 1923 visit to Spain gave him the chance to meet the fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal. The passage states:\n\n"(His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)"\n\nSo Einstein\'s 1923 trip to Spain provided him the opportunity to meet and interact with the Nobel laureate neuroanatomist Santiago Ramón y Cajal.', 'type': 'text'}]</code></li>
+<li>id: <code>msg_01XxsjqvB1hPUzxEWTS7hyKB</code></li>
+<li>content: <code>[{'text': 'According to the information provided, Einstein\'s 1923 visit to Spain gave him a chance to meet the fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal. The passage states:\n\n"A two-week visit to Spain that he undertook in 1923 saw him collecting another award, a membership of the Spanish Academy of Sciences signified by a diploma handed to him by King Alfonso XIII. (His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)"\n\nSo the circumstances that led Einstein to meet the neuroanatomist Ramón y Cajal were Einstein\'s 1923 visit to Spain, where he was awarded membership in the Spanish Academy of Sciences and had the opportunity to meet the fellow Nobel laureate Ramón y Cajal.', 'type': 'text'}]</code></li>
 <li>model: <code>claude-3-haiku-20240307</code></li>
 <li>role: <code>assistant</code></li>
 <li>stop_reason: <code>end_turn</code></li>
 <li>stop_sequence: <code>None</code></li>
 <li>type: <code>message</code></li>
-<li>usage: <code>{'cache_creation_input_tokens': 0, 'cache_read_input_tokens': 0, 'input_tokens': 1957, 'output_tokens': 119}</code></li>
+<li>usage: <code>{'cache_creation_input_tokens': 0, 'cache_read_input_tokens': 0, 'input_tokens': 465, 'output_tokens': 187}</code></li>
 </ul>
 </details>
 </div>
 </div>
 </section>
+</section>
 <section id="improvements" class="level1">
 <h1>Improvements</h1>
-<p><strong>Cross Encoder</strong> - This method use a Bi-encoder model. It is very efficient, since the embeddings for the document can be computed in parallel, and stored in a database, so that in the end all that you need to look up is the similarity between the prompt embedding and the embeddings stored in a database.</p>
-<p>The documents and query representations are computed entirely separately in the bi-encoder, so they aren’t aware of each other. Improvements can be made by using a Cross-encoder model. These essentially are a binary classifier, where p(positive class) is taken as the similarity score. These are slower than bi-encoders, but are more accurate.</p>
+<p><strong>Cross Encoder</strong> - The method described above uses a <strong>Bi-encoder</strong> model. It is very efficient, since the embeddings for the document can be computed in parallel, and stored in a database, so that in the end all that you need to look up is the similarity between the prompt embedding and the embeddings stored in a database. The documents and query representations are computed entirely separately in the bi-encoder, so they aren’t aware of each other.</p>
+<ul>
+<li>Improvements can be made by using a <strong>Cross-encoder</strong> model. These essentially are a binary classifier, where p(positive class) is taken as the similarity score. These are slower than bi-encoders, but are more accurate.</li>
+</ul>
 <p><img src="cross-encoder.png"></p>
 <p><strong>Reranking</strong> Cross encoders are computationally expensive to run, so using a cross-encoder on the entire set of documents, for every prompt, would take a long time. One solution is to return a shortlist of documents using a computationally efficient approach, such as a bi-encoder, and then re-rank these by using a cross-encoder. There’s a library for this - github.com/answerdotai/rerankers</p>
-<p><strong>Keyword Search</strong> always have keyword search and full text search in the pipeline.</p>
-<p><strong>tf-idf</strong> term frequency-inverse document frequency weighs down common words and weighs up rare words.</p>
+<p><strong>Keyword Search</strong>: always have keyword search and full text search in the pipeline.</p>
+<p><strong>tf-idf</strong>: term frequency-inverse document frequency weighs down common words and weighs up rare words.</p>
 <p><strong>BM25</strong> is a way to implement tf-idf.</p>
+</section>
+<section id="running-deepseek-locally-without-sending-data-to-the-cloud" class="level1">
+<h1>Running DeepSeek locally without sending data to the cloud</h1>
+<p>There are plenty of cases where querying a third party server might give away sensitive information.</p>
+<p>Since <strong>DeepSeek</strong> was released it has become much easier to run this process locally. You’ll just need to install ollama and then pull the relevant deepseek model, then you can query the LLM without even needing the internet.</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> <span class="st">'deepseek-r1:1.5b'</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> ollama.chat(model<span class="op">=</span>llm, messages<span class="op">=</span>[{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>:  <span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> query}])</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> (chat[<span class="st">'message'</span>][<span class="st">'content'</span>])</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the reasoning part leaving just deepseek's answer</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>cleaned_text <span class="op">=</span> re.sub(<span class="vs">r'&lt;think&gt;.*?&lt;/think&gt;'</span>, <span class="st">''</span>, answer, flags<span class="op">=</span>re.DOTALL)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>cleaned_text.strip()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>'Einstein met Santiago Ramón y Cajal during his two-week visit to Spain in 1923. This was part of his scientific endeavors and provided him with an opportunity to meet another Nobel laureate from the same country.\n\n**Answer:** Einstein met Santiago Ramón y Cajal during his visit to Spain in 1923, where he collected a science award and had an opportunity to meet another Nobel laureate.'</code></pre>
+</div>
+</div>
+<section id="thanks-for-reading-let-me-know-if-you-have-any-questions-or-if-your-company-would-like-a-rag-system-implemented" class="level3">
+<h3 class="anchored" data-anchor-id="thanks-for-reading-let-me-know-if-you-have-any-questions-or-if-your-company-would-like-a-rag-system-implemented">Thanks for reading! Let me know if you have any questions or if your company would like a RAG system implemented 😉</h3>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
