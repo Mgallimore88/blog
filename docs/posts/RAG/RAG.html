@@ -217,12 +217,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>I got the model list from here https://www.sbert.net/docs/sentence_transformer/pretrained_models.html</p>
-<div class="cell" data-execution_count="3">
+<p>For a github repo it might be better to choose a code model.</p>
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> SentenceTransformer(<span class="st">'Alibaba-NLP/gte-base-en-v1.5'</span>, trust_remote_code<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>SentenceTransformer(
   (0): Transformer({'max_seq_length': 8192, 'do_lower_case': False}) with Transformer model: NewModel 
   (1): Pooling({'word_embedding_dimension': 768, 'pooling_mode_cls_token': True, 'pooling_mode_mean_tokens': False, 'pooling_mode_max_tokens': False, 'pooling_mode_mean_sqrt_len_tokens': False, 'pooling_mode_weightedmean_tokens': False, 'pooling_mode_lasttoken': False, 'include_prompt': True})
@@ -232,24 +233,56 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="fetch-some-text-content-and-embed-it" class="level3">
 <h3 class="anchored" data-anchor-id="fetch-some-text-content-and-embed-it">Fetch some text content and embed it</h3>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>wiki <span class="op">=</span> Wikipedia(<span class="st">'RAGBot/0.0'</span>, <span class="st">'en'</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> wiki.page(<span class="st">'Albert Einstein'</span>).text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>ls</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RAG.ipynb         cross-encoder.png example-repo.txt  rag-tree.webp</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wiki = Wikipedia('RAGBot/0.0', 'en')</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># doc = wiki.page('Albert Einstein').text</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load a local text file</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'example-repo.txt'</span>, <span class="st">'r'</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    doc <span class="op">=</span> <span class="bu">file</span>.read()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> doc.split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="choose-which-chunks-to-split-the-document-into" class="level3">
 <h3 class="anchored" data-anchor-id="choose-which-chunks-to-split-the-document-into">Choose which chunks to split the document into</h3>
 <ul>
 <li>I chose to split the document into lines at the newline character.</li>
-<li>Other options would be paragraphs,</li>
+<li>Other options would be paragraphs.</li>
+<li>For a repo, I’m choosing to split the document into n overlapping chunks, because otherwise a function might be split in two and not make sense.</li>
 </ul>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>lines <span class="op">=</span> doc.split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... make embedding</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>docs_embed <span class="op">=</span> model.encode(lines, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>n_lines <span class="op">=</span> <span class="bu">len</span>(doc.split(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>n_chunks <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>window_size <span class="op">=</span> n_lines <span class="op">//</span> n_chunks</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>window_size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>885</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># combine the sets of lines into chunks of text. </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> [lines[i:i<span class="op">+</span>window_size] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_lines, window_size)]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>shift <span class="op">=</span> window_size <span class="op">//</span> <span class="dv">2</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>chunks_shift <span class="op">=</span> [lines[i<span class="op">+</span>shift:i<span class="op">+</span>window_size<span class="op">+</span>shift] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_lines, window_size)]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> chunks <span class="op">+</span> chunks_shift</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ... make embedding</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>docs_embed <span class="op">=</span> model.encode(chunks, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>IndexError: list index out of range</code></pre>
+</div>
 </div>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>wiki.page(<span class="st">'Albert Einstein'</span>).text[:<span class="dv">100</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>wiki.page(<span class="st">'Albert Einstein'</span>).text[:<span class="dv">100</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>'Albert Einstein (14 March 1879 – 18 April 1955) was a German-born theoretical physicist who is best '</code></pre>
 </div>
@@ -260,7 +293,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here’s an example of one of the embeddings - it is from the fourth line of the input text.</p>
 <p>Only the first 10 dimensions are shown for brevity, but the semantic content of line 4 is represented by the combination of all 768 dimensions.</p>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>docs_embed[<span class="dv">4</span>].shape, docs_embed[<span class="dv">4</span>][:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>docs_embed[<span class="dv">4</span>].shape, docs_embed[<span class="dv">4</span>][:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>((768,),
  array([ 0.01500533,  0.00550891,  0.04666482,  0.02964193,  0.03918857,
@@ -273,9 +306,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3 class="anchored" data-anchor-id="make-an-embedding-of-the-prompt-query">Make an embedding of the prompt (query)</h3>
 <p>The query is also 768 dimensional since we used the same sentence transformer to create the embeddings.</p>
 <div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"What were the circumstances which led Einstein to meet his fellow neuroanatomist Ramon?"</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>query_embed <span class="op">=</span> model.encode(query, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>query_embed.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"What were the circumstances which led Einstein to meet his fellow neuroanatomist Ramon?"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>query_embed <span class="op">=</span> model.encode(query, normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>query_embed.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>(768,)</code></pre>
 </div>
@@ -284,8 +317,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If the dimensions of the prompt and a given line are different, then the dimensions won’t point in the same direction, and the resulting dot product will be small. If many of the dimensions line up, the dot product will be larger. By picking the line with the largest dot product, we are picking the line that is most similar to the prompt.</p>
 <p>Calculating the <a href="https://www.mathsisfun.com/algebra/vectors-dot-product.html">dot product</a> of all the line embeddings with the query embedding gives a similarity score between each line and the query. Again, just the first three similarities are shown for brevity, but there are acutally 308 similarities since there were 308 lines in the input text.</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.dot(docs_embed, query_embed)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"first 4 similarities: </span><span class="sc">{</span>similarities[:<span class="dv">4</span>]<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">index of maximum similarity: </span><span class="sc">{</span>similarities<span class="sc">.</span>argmax()<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">which is: </span><span class="sc">{</span>similarities<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> np.dot(docs_embed, query_embed)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"first 4 similarities: </span><span class="sc">{</span>similarities[:<span class="dv">4</span>]<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">index of maximum similarity: </span><span class="sc">{</span>similarities<span class="sc">.</span>argmax()<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="ss">which is: </span><span class="sc">{</span>similarities<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>first 4 similarities: [0.50982666 0.49827662 0.43293458 0.44298065] 
 index of maximum similarity: 55 
@@ -294,17 +327,17 @@ which is: 0.6418374180793762</code></pre>
 </div>
 <p>But maybe there are other parts of the text which also contain relevant information. That’s a good reason to choose the top n similar lines and not just the first.</p>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>top_3_idx <span class="op">=</span> np.argsort(similarities)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">3</span>]</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>top_3_idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>top_3_idx <span class="op">=</span> np.argsort(similarities)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">3</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>top_3_idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>array([55, 67, 42])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents <span class="op">=</span> [lines[idx] <span class="cf">for</span> idx <span class="kw">in</span> top_3_idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents <span class="op">=</span> [lines[idx] <span class="cf">for</span> idx <span class="kw">in</span> top_3_idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>most_similar_documents</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>["Einstein's decision to tour the eastern hemisphere in 1922 meant that he was unable to go to Stockholm in the December of that year to participate in the Nobel prize ceremony. His place at the traditional Nobel banquet was taken by a German diplomat, who gave a speech praising him not only as a physicist but also as a campaigner for peace. A two-week visit to Spain that he undertook in 1923 saw him collecting another award, a membership of the Spanish Academy of Sciences signified by a diploma handed to him by King Alfonso XIII. (His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)",
  "Einstein next traveled to California, where he met Caltech president and Nobel laureate Robert A. Millikan. His friendship with Millikan was awkward, as Millikan had a penchant for patriotic militarism, where Einstein was a pronounced pacifist. During an address to Caltech's students, Einstein noted that science was often inclined to do more harm than good.",
@@ -312,9 +345,9 @@ which is: 0.6418374180793762</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> models[<span class="dv">2</span>]</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(llm, sp<span class="op">=</span><span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>chat(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> models[<span class="dv">2</span>]</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> Chat(llm, sp<span class="op">=</span><span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>chat(query)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <p>According to the information provided, Einstein’s 1923 visit to Spain gave him a chance to meet the fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal. The passage states:</p>
 <p>“A two-week visit to Spain that he undertook in 1923 saw him collecting another award, a membership of the Spanish Academy of Sciences signified by a diploma handed to him by King Alfonso XIII. (His Spanish trip also gave him a chance to meet a fellow Nobel laureate, the neuroanatomist Santiago Ramón y Cajal.)”</p>
@@ -352,13 +385,13 @@ which is: 0.6418374180793762</code></pre>
 <p>There are plenty of cases where querying a third party server might give away sensitive information.</p>
 <p>Since <strong>DeepSeek</strong> was released it has become much easier to run this process locally. You’ll just need to install ollama and then pull the relevant deepseek model, then you can query the LLM without even needing the internet.</p>
 <div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> <span class="st">'deepseek-r1:1.5b'</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> ollama.chat(model<span class="op">=</span>llm, messages<span class="op">=</span>[{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>:  <span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> query}])</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> (chat[<span class="st">'message'</span>][<span class="st">'content'</span>])</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the reasoning part leaving just deepseek's answer</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>cleaned_text <span class="op">=</span> re.sub(<span class="vs">r'&lt;think&gt;.*?&lt;/think&gt;'</span>, <span class="st">''</span>, answer, flags<span class="op">=</span>re.DOTALL)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>cleaned_text.strip()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> <span class="st">'deepseek-r1:1.5b'</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>chat <span class="op">=</span> ollama.chat(model<span class="op">=</span>llm, messages<span class="op">=</span>[{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>:  <span class="ss">f"Here is some information from Wikipedia, it will help you to answer a question. Wikipedia information: </span><span class="sc">{</span><span class="bu">str</span>(most_similar_documents)<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> query}])</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> (chat[<span class="st">'message'</span>][<span class="st">'content'</span>])</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the reasoning part leaving just deepseek's answer</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>cleaned_text <span class="op">=</span> re.sub(<span class="vs">r'&lt;think&gt;.*?&lt;/think&gt;'</span>, <span class="st">''</span>, answer, flags<span class="op">=</span>re.DOTALL)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>cleaned_text.strip()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>'Einstein met Santiago Ramón y Cajal during his two-week visit to Spain in 1923. This was part of his scientific endeavors and provided him with an opportunity to meet another Nobel laureate from the same country.\n\n**Answer:** Einstein met Santiago Ramón y Cajal during his visit to Spain in 1923, where he collected a science award and had an opportunity to meet another Nobel laureate.'</code></pre>
 </div>
