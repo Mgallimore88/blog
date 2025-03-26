@@ -242,7 +242,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Hi! I’m a software engineer living in Squamish BC, Canada. I moved out here to pursue a life in the mountains.\nA graduate of Acoustics, I have experience in electronics, digital signal processing, mechanical engineering, and a good math background.\nI am proficient in Python. I studied Machine Learning through the FastAI course and textbooks. I’ve gained a solid practical understanding of how to build and train ML models including convolutional neural networks, random forests, segmentation models, and collaborative filtering models.\nCurrently I’m working on a project to identify animal species in audio recordings."
+    "text": "Hi! I’m a software engineer living in Squamish BC, Canada.\nA graduate of Acoustics, I have industry experience in Machine Learning, Electronics, Digital Signal Processing, Mechanical Engineering, and a good math background.\nI am proficient in Python. I studied Machine Learning through the FastAI course and textbooks. Through application of my skills on Kaggle competitions, industry experience and personal projects, I’ve gained a solid practical understanding of how to build and train ML models including CNNs, LLMs, random forests, segmentation models, and collaborative filtering models.\nI’m easy to get along with, and have excellent communication skills- which I’ve developed by presenting at Squamish’s machine learning meetup group where I’m an organizer and maintain the website. mlsquamish.ca\nThanks for visiting my blog!"
   },
   {
     "objectID": "posts/RAG/RAG-on-code.html",
