@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-03-26">
 
-<title>MG ML – c-results</title>
+<title>MG ML - CNN Birdsong Classifier Evaluation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -126,7 +127,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -168,12 +169,74 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">CNN Birdsong Classifier Evaluation</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">CNN</div>
+                <div class="quarto-category">conservation</div>
+                <div class="quarto-category">AI</div>
+                <div class="quarto-category">birdsong</div>
+                <div class="quarto-category">evaluation</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 26, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#cnn-birdsong-classifer-evaluation" id="toc-cnn-birdsong-classifer-evaluation" class="nav-link active" data-scroll-target="#cnn-birdsong-classifer-evaluation">CNN Birdsong Classifer Evaluation</a>
+  <ul class="collapse">
+  <li><a href="#performance-metrics-measured-on-a-balanced-test-set-of-1600-examples." id="toc-performance-metrics-measured-on-a-balanced-test-set-of-1600-examples." class="nav-link" data-scroll-target="#performance-metrics-measured-on-a-balanced-test-set-of-1600-examples.">Performance metrics measured on a balanced test set of 1600 examples.</a></li>
+  <li><a href="#some-notes-on-binary-classifer-evaluation" id="toc-some-notes-on-binary-classifer-evaluation" class="nav-link" data-scroll-target="#some-notes-on-binary-classifer-evaluation">Some notes on binary classifer evaluation</a></li>
+  <li><a href="#chosen-metrics-accuracy-precision-recall-and-f1-score" id="toc-chosen-metrics-accuracy-precision-recall-and-f1-score" class="nav-link" data-scroll-target="#chosen-metrics-accuracy-precision-recall-and-f1-score">Chosen metrics: Accuracy, Precision, Recall, and F1 score</a></li>
+  </ul></li>
+  <li><a href="#performance-metrics-of-osfl-model-on-balanced-validation-set" id="toc-performance-metrics-of-osfl-model-on-balanced-validation-set" class="nav-link" data-scroll-target="#performance-metrics-of-osfl-model-on-balanced-validation-set">Performance metrics of OSFL model on balanced validation set</a></li>
+  <li><a href="#performance-metrics-of-osfl-model-on-balanced-withheld-test-set" id="toc-performance-metrics-of-osfl-model-on-balanced-withheld-test-set" class="nav-link" data-scroll-target="#performance-metrics-of-osfl-model-on-balanced-withheld-test-set">Performance metrics of OSFL model on balanced withheld test set</a></li>
+  <li><a href="#withheld-test-set-results" id="toc-withheld-test-set-results" class="nav-link" data-scroll-target="#withheld-test-set-results">Withheld test set results:</a></li>
+  <li><a href="#model-evaluation-against-unbalanced-validation-set" id="toc-model-evaluation-against-unbalanced-validation-set" class="nav-link" data-scroll-target="#model-evaluation-against-unbalanced-validation-set">Model evaluation against unbalanced validation set</a></li>
+  <li><a href="#osfl-model-trained-entirely-on-focal-examples" id="toc-osfl-model-trained-entirely-on-focal-examples" class="nav-link" data-scroll-target="#osfl-model-trained-entirely-on-focal-examples">OSFL model trained entirely on focal examples</a></li>
+  <li><a href="#model-comparison-with-benchmark-model" id="toc-model-comparison-with-benchmark-model" class="nav-link" data-scroll-target="#model-comparison-with-benchmark-model">Model comparison with benchmark model</a>
+  <ul class="collapse">
+  <li><a href="#results-of-osfl-model-against-the-hawkears-osfl-output-node" id="toc-results-of-osfl-model-against-the-hawkears-osfl-output-node" class="nav-link" data-scroll-target="#results-of-osfl-model-against-the-hawkears-osfl-output-node">Results of OSFL model against the Hawkears OSFL output node</a></li>
+  </ul></li>
+  <li><a href="#withheld-test-set-results-1" id="toc-withheld-test-set-results-1" class="nav-link" data-scroll-target="#withheld-test-set-results-1">Withheld test set results</a>
+  <ul class="collapse">
+  <li><a href="#pr-curves-measured-against-an-uncleaned-balanced-test-set" id="toc-pr-curves-measured-against-an-uncleaned-balanced-test-set" class="nav-link" data-scroll-target="#pr-curves-measured-against-an-uncleaned-balanced-test-set">PR Curves measured against an uncleaned balanced test set</a></li>
+  <li><a href="#confusion-matrices-for-the-models-each-at-their-optimal-threshold" id="toc-confusion-matrices-for-the-models-each-at-their-optimal-threshold" class="nav-link" data-scroll-target="#confusion-matrices-for-the-models-each-at-their-optimal-threshold">Confusion matrices for the models each at their optimal threshold</a></li>
+  <li><a href="#effect-of-changing-the-threshold-on-the-confusion-matrix" id="toc-effect-of-changing-the-threshold-on-the-confusion-matrix" class="nav-link" data-scroll-target="#effect-of-changing-the-threshold-on-the-confusion-matrix">Effect of changing the threshold on the confusion matrix</a>
+  <ul class="collapse">
+  <li><a href="#osfl-cnn-recognizer" id="toc-osfl-cnn-recognizer" class="nav-link" data-scroll-target="#osfl-cnn-recognizer">OSFL CNN Recognizer</a></li>
+  <li><a href="#hawkears-osfl-output-node" id="toc-hawkears-osfl-output-node" class="nav-link" data-scroll-target="#hawkears-osfl-output-node">HawkEars OSFL output node</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

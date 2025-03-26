@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2024-03-20">
 
-<title>MG ML – embeddings</title>
+<title>MG ML - Training a book reccomendation system using entity embeddings</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -129,7 +130,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -171,12 +172,101 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Training a book reccomendation system using entity embeddings</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Embeddings</div>
+                <div class="quarto-category">Reccomender Systems</div>
+                <div class="quarto-category">AI</div>
+                <div class="quarto-category">PyTorch</div>
+                <div class="quarto-category">fastai</div>
+                <div class="quarto-category">Bias</div>
+                <div class="quarto-category">L2 Regularization</div>
+                <div class="quarto-category">Latent Factors</div>
+                <div class="quarto-category">Cosine Similarity</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 20, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-an-embedding-layer-and-how-does-it-work" id="toc-what-is-an-embedding-layer-and-how-does-it-work" class="nav-link active" data-scroll-target="#what-is-an-embedding-layer-and-how-does-it-work">What is an embedding layer and how does it work?</a></li>
+  <li><a href="#loading-the-data-into-pandas" id="toc-loading-the-data-into-pandas" class="nav-link" data-scroll-target="#loading-the-data-into-pandas">Loading the data into Pandas</a></li>
+  <li><a href="#scaling" id="toc-scaling" class="nav-link" data-scroll-target="#scaling">Scaling</a></li>
+  <li><a href="#now-weve-got-a-table-of-book-titles-ratings-and-user-ids.-lets-make-a-fastai-dataloaders-object" id="toc-now-weve-got-a-table-of-book-titles-ratings-and-user-ids.-lets-make-a-fastai-dataloaders-object" class="nav-link" data-scroll-target="#now-weve-got-a-table-of-book-titles-ratings-and-user-ids.-lets-make-a-fastai-dataloaders-object">Now we’ve got a table of book titles, ratings and user IDs. Let’s make a fastai Dataloaders object</a>
+  <ul class="collapse">
+  <li><a href="#embeddings" id="toc-embeddings" class="nav-link" data-scroll-target="#embeddings">Embeddings</a></li>
+  </ul></li>
+  <li><a href="#now-lets-make-a-dataloaders-object" id="toc-now-lets-make-a-dataloaders-object" class="nav-link" data-scroll-target="#now-lets-make-a-dataloaders-object">Now let’s make a dataloaders object</a>
+  <ul class="collapse">
+  <li><a href="#take-a-sample" id="toc-take-a-sample" class="nav-link" data-scroll-target="#take-a-sample">Take a sample</a></li>
+  </ul></li>
+  <li><a href="#crosstab" id="toc-crosstab" class="nav-link" data-scroll-target="#crosstab">Crosstab</a></li>
+  <li><a href="#creating-an-embedding-matrix" id="toc-creating-an-embedding-matrix" class="nav-link" data-scroll-target="#creating-an-embedding-matrix">Creating an embedding matrix</a></li>
+  <li><a href="#looking-at-the-features" id="toc-looking-at-the-features" class="nav-link" data-scroll-target="#looking-at-the-features">Looking at the features</a></li>
+  <li><a href="#dot-product-vectors-and-scalars" id="toc-dot-product-vectors-and-scalars" class="nav-link" data-scroll-target="#dot-product-vectors-and-scalars">Dot Product, Vectors and Scalars</a>
+  <ul class="collapse">
+  <li><a href="#this-is-just-the-sum-of-an-elementwise-multiplication-in-python-which-is-also-identical-to-a-matrix-multiplaction-of-two-vectors." id="toc-this-is-just-the-sum-of-an-elementwise-multiplication-in-python-which-is-also-identical-to-a-matrix-multiplaction-of-two-vectors." class="nav-link" data-scroll-target="#this-is-just-the-sum-of-an-elementwise-multiplication-in-python-which-is-also-identical-to-a-matrix-multiplaction-of-two-vectors.">This is just the sum of an elementwise multiplication in python, which is also identical to a matrix multiplaction of two vectors.</a></li>
+  </ul></li>
+  <li><a href="#whats-an-embedding-layer" id="toc-whats-an-embedding-layer" class="nav-link" data-scroll-target="#whats-an-embedding-layer">What’s an embedding layer?</a></li>
+  <li><a href="#making-a-pytorch-dot-product-model" id="toc-making-a-pytorch-dot-product-model" class="nav-link" data-scroll-target="#making-a-pytorch-dot-product-model">Making a PyTorch dot product model</a></li>
+  <li><a href="#making-the-training-process-more-efficient" id="toc-making-the-training-process-more-efficient" class="nav-link" data-scroll-target="#making-the-training-process-more-efficient">Making the training process more efficient</a>
+  <ul class="collapse">
+  <li><a href="#training-on-the-entire-dataset-took-3-mins-per-epoch." id="toc-training-on-the-entire-dataset-took-3-mins-per-epoch." class="nav-link" data-scroll-target="#training-on-the-entire-dataset-took-3-mins-per-epoch.">Training on the entire dataset took 3 mins per epoch.</a></li>
+  <li><a href="#sample-only-popular-books-and-users-with-lots-of-entries." id="toc-sample-only-popular-books-and-users-with-lots-of-entries." class="nav-link" data-scroll-target="#sample-only-popular-books-and-users-with-lots-of-entries.">Sample only popular books and users with lots of entries.</a></li>
+  <li><a href="#make-a-new-dataloaders-object-to-draw-training-and-validation-samples-from-this-new-dataframe." id="toc-make-a-new-dataloaders-object-to-draw-training-and-validation-samples-from-this-new-dataframe." class="nav-link" data-scroll-target="#make-a-new-dataloaders-object-to-draw-training-and-validation-samples-from-this-new-dataframe.">Make a new dataloaders object to draw training and validation samples from this new dataframe.</a></li>
+  <li><a href="#lets-see-how-the-model-trains-now" id="toc-lets-see-how-the-model-trains-now" class="nav-link" data-scroll-target="#lets-see-how-the-model-trains-now">Let’s see how the model trains now</a>
+  <ul class="collapse">
+  <li><a href="#great---the-training-only-takes-5s-per-epoch-and-were-still-seeing-convergence-after-5-epochs.-lets-try-to-improve-from-here" id="toc-great---the-training-only-takes-5s-per-epoch-and-were-still-seeing-convergence-after-5-epochs.-lets-try-to-improve-from-here" class="nav-link" data-scroll-target="#great---the-training-only-takes-5s-per-epoch-and-were-still-seeing-convergence-after-5-epochs.-lets-try-to-improve-from-here">Great - the training only takes 5s per epoch, and we’re still seeing convergence after 5 epochs. Let’s try to improve from here</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#adding-intentional-bias" id="toc-adding-intentional-bias" class="nav-link" data-scroll-target="#adding-intentional-bias">Adding intentional Bias</a>
+  <ul class="collapse">
+  <li><a href="#weight-decay" id="toc-weight-decay" class="nav-link" data-scroll-target="#weight-decay">Weight decay</a></li>
+  </ul></li>
+  <li><a href="#looking-at-the-factors-for-a-batch-of-users" id="toc-looking-at-the-factors-for-a-batch-of-users" class="nav-link" data-scroll-target="#looking-at-the-factors-for-a-batch-of-users">looking at the factors for a batch of users</a>
+  <ul class="collapse">
+  <li><a href="#thinking-about-latent-factors-as-components-of-a-vector-in-an-n-dimensional-feature-space" id="toc-thinking-about-latent-factors-as-components-of-a-vector-in-an-n-dimensional-feature-space" class="nav-link" data-scroll-target="#thinking-about-latent-factors-as-components-of-a-vector-in-an-n-dimensional-feature-space">Thinking about latent factors as components of a vector in an n-dimensional feature space</a></li>
+  </ul></li>
+  <li><a href="#using-the-trained-model" id="toc-using-the-trained-model" class="nav-link" data-scroll-target="#using-the-trained-model">Using the trained model</a>
+  <ul class="collapse">
+  <li><a href="#finding-the-books-with-the-highest-bias" id="toc-finding-the-books-with-the-highest-bias" class="nav-link" data-scroll-target="#finding-the-books-with-the-highest-bias">Finding the books with the highest bias</a></li>
+  </ul></li>
+  <li><a href="#making-recommendations-for-a-single-user." id="toc-making-recommendations-for-a-single-user." class="nav-link" data-scroll-target="#making-recommendations-for-a-single-user.">Making recommendations for a single user.</a></li>
+  <li><a href="#finding-book-buddies" id="toc-finding-book-buddies" class="nav-link" data-scroll-target="#finding-book-buddies">Finding ‘book buddies’</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul class="collapse">
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

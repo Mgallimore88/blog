@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2024-12-01">
 
-<title>MG ML – insurance_competition</title>
+<title>MG ML - Random Forests for insurance premium prediction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -129,7 +130,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -171,12 +172,101 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Random Forests for insurance premium prediction</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Decision trees</div>
+                <div class="quarto-category">Neural network</div>
+                <div class="quarto-category">Ensembling</div>
+                <div class="quarto-category">Insurance</div>
+                <div class="quarto-category">Kaggle</div>
+                <div class="quarto-category">Random Forests</div>
+                <div class="quarto-category">FastAI</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 1, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#kaggle-insurance-competition-2024" id="toc-kaggle-insurance-competition-2024" class="nav-link active" data-scroll-target="#kaggle-insurance-competition-2024">Kaggle insurance competition 2024</a></li>
+  <li><a href="#regression-with-an-insurance-dataset" id="toc-regression-with-an-insurance-dataset" class="nav-link" data-scroll-target="#regression-with-an-insurance-dataset">Regression with an Insurance Dataset</a>
+  <ul class="collapse">
+  <li><a href="#dependent-variable" id="toc-dependent-variable" class="nav-link" data-scroll-target="#dependent-variable">Dependent Variable</a></li>
+  <li><a href="#root-mean-square-log-error" id="toc-root-mean-square-log-error" class="nav-link" data-scroll-target="#root-mean-square-log-error">Root mean square log error</a></li>
+  <li><a href="#handle-strings-and-missing-data." id="toc-handle-strings-and-missing-data." class="nav-link" data-scroll-target="#handle-strings-and-missing-data.">Handle strings and missing data.</a></li>
+  <li><a href="#checkpoint" id="toc-checkpoint" class="nav-link" data-scroll-target="#checkpoint">Checkpoint</a></li>
+  </ul></li>
+  <li><a href="#train-a-decision-tree-model" id="toc-train-a-decision-tree-model" class="nav-link" data-scroll-target="#train-a-decision-tree-model">Train a decision tree model</a>
+  <ul class="collapse">
+  <li><a href="#visualizing-the-data-splits-made-by-the-initial-decision-tree" id="toc-visualizing-the-data-splits-made-by-the-initial-decision-tree" class="nav-link" data-scroll-target="#visualizing-the-data-splits-made-by-the-initial-decision-tree">Visualizing the data splits made by the initial decision tree</a></li>
+  <li><a href="#initial-observations" id="toc-initial-observations" class="nav-link" data-scroll-target="#initial-observations">Initial observations</a></li>
+  </ul></li>
+  <li><a href="#lets-build-a-big-tree" id="toc-lets-build-a-big-tree" class="nav-link" data-scroll-target="#lets-build-a-big-tree">Let’s build a big tree!</a>
+  <ul class="collapse">
+  <li><a href="#rmse" id="toc-rmse" class="nav-link" data-scroll-target="#rmse">RMSE</a></li>
+  </ul></li>
+  <li><a href="#lets-try-a-random-forest" id="toc-lets-try-a-random-forest" class="nav-link" data-scroll-target="#lets-try-a-random-forest">Let’s try a random forest</a></li>
+  <li><a href="#out-of-bag-error" id="toc-out-of-bag-error" class="nav-link" data-scroll-target="#out-of-bag-error">Out of bag error</a></li>
+  <li><a href="#model-interpretation" id="toc-model-interpretation" class="nav-link" data-scroll-target="#model-interpretation">Model interpretation</a></li>
+  <li><a href="#feature-importance" id="toc-feature-importance" class="nav-link" data-scroll-target="#feature-importance">Feature importance</a>
+  <ul class="collapse">
+  <li><a href="#removing-low-importance-features" id="toc-removing-low-importance-features" class="nav-link" data-scroll-target="#removing-low-importance-features">Removing low importance features</a></li>
+  <li><a href="#removing-redundant-features" id="toc-removing-redundant-features" class="nav-link" data-scroll-target="#removing-redundant-features">Removing redundant features</a></li>
+  <li><a href="#checkpoint-2" id="toc-checkpoint-2" class="nav-link" data-scroll-target="#checkpoint-2">Checkpoint 2</a></li>
+  </ul></li>
+  <li><a href="#partial-dependence" id="toc-partial-dependence" class="nav-link" data-scroll-target="#partial-dependence">Partial dependence</a>
+  <ul class="collapse">
+  <li><a href="#check-the-continuous-variables" id="toc-check-the-continuous-variables" class="nav-link" data-scroll-target="#check-the-continuous-variables">Check the continuous variables</a></li>
+  </ul></li>
+  <li><a href="#partial-dependence-plots" id="toc-partial-dependence-plots" class="nav-link" data-scroll-target="#partial-dependence-plots">Partial Dependence Plots</a></li>
+  <li><a href="#tree-interpreter-waterfall-plots" id="toc-tree-interpreter-waterfall-plots" class="nav-link" data-scroll-target="#tree-interpreter-waterfall-plots">Tree interpreter / Waterfall plots</a></li>
+  <li><a href="#convert-the-contribution-error-values-back-up-to-the-original-scale" id="toc-convert-the-contribution-error-values-back-up-to-the-original-scale" class="nav-link" data-scroll-target="#convert-the-contribution-error-values-back-up-to-the-original-scale">Convert the contribution / error values back up to the original scale</a></li>
+  <li><a href="#lets-find-the-largest-possible-contribution-from-income" id="toc-lets-find-the-largest-possible-contribution-from-income" class="nav-link" data-scroll-target="#lets-find-the-largest-possible-contribution-from-income">Let’s find the largest possible contribution from income</a></li>
+  <li><a href="#making-a-prediction" id="toc-making-a-prediction" class="nav-link" data-scroll-target="#making-a-prediction">Making a prediction</a></li>
+  <li><a href="#using-this-approach-resulted-in-a-model-which-placed-8182392-on-the-kaggle-private-leaderboard." id="toc-using-this-approach-resulted-in-a-model-which-placed-8182392-on-the-kaggle-private-leaderboard." class="nav-link" data-scroll-target="#using-this-approach-resulted-in-a-model-which-placed-8182392-on-the-kaggle-private-leaderboard.">Using this approach resulted in a model which placed 818/2392 on the Kaggle private leaderboard.</a></li>
+  <li><a href="#improving-on-the-random-forest." id="toc-improving-on-the-random-forest." class="nav-link" data-scroll-target="#improving-on-the-random-forest.">Improving on the Random Forest.</a>
+  <ul class="collapse">
+  <li><a href="#the-extrapolation-problem" id="toc-the-extrapolation-problem" class="nav-link" data-scroll-target="#the-extrapolation-problem">The extrapolation problem</a></li>
+  </ul></li>
+  <li><a href="#finding-out-of-domain-data" id="toc-finding-out-of-domain-data" class="nav-link" data-scroll-target="#finding-out-of-domain-data">Finding out-of-domain data</a></li>
+  <li><a href="#removing-the-columns-which-were-biased" id="toc-removing-the-columns-which-were-biased" class="nav-link" data-scroll-target="#removing-the-columns-which-were-biased">Removing the columns which were biased</a></li>
+  <li><a href="#removing-old-data" id="toc-removing-old-data" class="nav-link" data-scroll-target="#removing-old-data">Removing old data</a></li>
+  <li><a href="#neural-networks" id="toc-neural-networks" class="nav-link" data-scroll-target="#neural-networks">Neural Networks</a></li>
+  <li><a href="#ensembling" id="toc-ensembling" class="nav-link" data-scroll-target="#ensembling">Ensembling</a></li>
+  <li><a href="#ensembling-the-two-models-together-gives-a-better-result-than-either-model-achieved-on-its-own." id="toc-ensembling-the-two-models-together-gives-a-better-result-than-either-model-achieved-on-its-own." class="nav-link" data-scroll-target="#ensembling-the-two-models-together-gives-a-better-result-than-either-model-achieved-on-its-own.">Ensembling the two models together gives a better result than either model achieved on its own.</a></li>
+  <li><a href="#submit-the-ensemble-preds-to-kaggle" id="toc-submit-the-ensemble-preds-to-kaggle" class="nav-link" data-scroll-target="#submit-the-ensemble-preds-to-kaggle">Submit the ensemble preds to Kaggle</a>
+  <ul class="collapse">
+  <li><a href="#process-the-test-set-for-nn" id="toc-process-the-test-set-for-nn" class="nav-link" data-scroll-target="#process-the-test-set-for-nn">Process the test set for NN</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-01-15">
 
-<title>MG ML – probability</title>
+<title>MG ML - Probability Distributions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -126,7 +127,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -168,12 +169,56 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Probability Distributions</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Exploration</div>
+                <div class="quarto-category">probability</div>
+                <div class="quarto-category">PDF</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 15, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#exploring-probability-distributions" id="toc-exploring-probability-distributions" class="nav-link active" data-scroll-target="#exploring-probability-distributions">Exploring probability distributions</a></li>
+  <li><a href="#we-can-see-here-that-the-two-rectangular-probability-distributions-combine-into-a-new-set-of-data-with-a-triangular-distribution." id="toc-we-can-see-here-that-the-two-rectangular-probability-distributions-combine-into-a-new-set-of-data-with-a-triangular-distribution." class="nav-link" data-scroll-target="#we-can-see-here-that-the-two-rectangular-probability-distributions-combine-into-a-new-set-of-data-with-a-triangular-distribution.">We can see here that the two rectangular probability distributions combine into a new set of data with a triangular distribution.</a></li>
+  <li><a href="#adding-a-third-rectangular-set-of-data" id="toc-adding-a-third-rectangular-set-of-data" class="nav-link" data-scroll-target="#adding-a-third-rectangular-set-of-data">Adding a third rectangular set of data</a>
+  <ul class="collapse">
+  <li><a href="#now-we-see-a-bell-curve." id="toc-now-we-see-a-bell-curve." class="nav-link" data-scroll-target="#now-we-see-a-bell-curve.">Now we see a bell curve.</a></li>
+  </ul></li>
+  <li><a href="#adding-a-fourth-rectangular-distribution-changes-the-shape-and-the-spread-of-the-bell-curve." id="toc-adding-a-fourth-rectangular-distribution-changes-the-shape-and-the-spread-of-the-bell-curve." class="nav-link" data-scroll-target="#adding-a-fourth-rectangular-distribution-changes-the-shape-and-the-spread-of-the-bell-curve.">Adding a fourth rectangular distribution changes the shape and the spread of the bell curve.</a></li>
+  <li><a href="#normalizing-the-data-lets-us-see-the-way-the-spread-of-probabilities-changes-as-we-add-more-rectangular-distributions-together." id="toc-normalizing-the-data-lets-us-see-the-way-the-spread-of-probabilities-changes-as-we-add-more-rectangular-distributions-together." class="nav-link" data-scroll-target="#normalizing-the-data-lets-us-see-the-way-the-spread-of-probabilities-changes-as-we-add-more-rectangular-distributions-together.">Normalizing the data lets us see the way the spread of probabilities changes as we add more rectangular distributions together.</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

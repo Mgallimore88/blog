@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-02-01">
 
-<title>MG ML – linear-nonlinear-neuralnet</title>
+<title>MG ML - Solving linear and nonlinear equations with neural networks</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -127,7 +128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -169,12 +170,93 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Solving linear and nonlinear equations with neural networks</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Universal Approximation Theorem</div>
+                <div class="quarto-category">PyTorch</div>
+                <div class="quarto-category">Feature Crosses</div>
+                <div class="quarto-category">Neural Networks</div>
+                <div class="quarto-category">Linear Equations</div>
+                <div class="quarto-category">Nonlinear Equations</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 1, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#exploring-the-capability-of-neural-networks-to-solve-simple-linear-and-nonlinear-algebraic-equations." id="toc-exploring-the-capability-of-neural-networks-to-solve-simple-linear-and-nonlinear-algebraic-equations." class="nav-link active" data-scroll-target="#exploring-the-capability-of-neural-networks-to-solve-simple-linear-and-nonlinear-algebraic-equations.">Exploring the capability of neural networks to solve simple linear and nonlinear algebraic equations.</a></li>
+  <li><a href="#part-1-using-the-original-solution-from-chat-gpt" id="toc-part-1-using-the-original-solution-from-chat-gpt" class="nav-link" data-scroll-target="#part-1-using-the-original-solution-from-chat-gpt">Part 1: using the original solution from Chat GPT</a></li>
+  <li><a href="#heres-a-modified-training-loop-which-keeps-a-record-of-the-loss-per-epoch" id="toc-heres-a-modified-training-loop-which-keeps-a-record-of-the-loss-per-epoch" class="nav-link" data-scroll-target="#heres-a-modified-training-loop-which-keeps-a-record-of-the-loss-per-epoch">Here’s a modified training loop which keeps a record of the loss per epoch</a></li>
+  <li><a href="#first-reset-the-model-parameters" id="toc-first-reset-the-model-parameters" class="nav-link" data-scroll-target="#first-reset-the-model-parameters">First reset the model parameters</a></li>
+  <li><a href="#then-re-train-the-model-for-more-epochs-and-print-the-loss-curves." id="toc-then-re-train-the-model-for-more-epochs-and-print-the-loss-curves." class="nav-link" data-scroll-target="#then-re-train-the-model-for-more-epochs-and-print-the-loss-curves.">Then re-train the model for more epochs and print the loss curves.</a></li>
+  <li><a href="#great-we-can-see-that-the-model-converges-towards-the-optimal-solution-for-this-linear-input." id="toc-great-we-can-see-that-the-model-converges-towards-the-optimal-solution-for-this-linear-input." class="nav-link" data-scroll-target="#great-we-can-see-that-the-model-converges-towards-the-optimal-solution-for-this-linear-input.">Great! We can see that the model converges towards the optimal solution for this linear input.</a></li>
+  <li><a href="#part-2-lets-use-this-code-to-train-a-different-type-of-model." id="toc-part-2-lets-use-this-code-to-train-a-different-type-of-model." class="nav-link" data-scroll-target="#part-2-lets-use-this-code-to-train-a-different-type-of-model.">Part 2: Let’s use this code to train a different type of model.</a></li>
+  <li><a href="#equations" id="toc-equations" class="nav-link" data-scroll-target="#equations">Equations</a></li>
+  <li><a href="#generate-a-synthetic-dataset-with-the-new-dependent-variable" id="toc-generate-a-synthetic-dataset-with-the-new-dependent-variable" class="nav-link" data-scroll-target="#generate-a-synthetic-dataset-with-the-new-dependent-variable">Generate a synthetic dataset with the new dependent variable</a></li>
+  <li><a href="#split-the-training-data-into-a-validation-and-test-set." id="toc-split-the-training-data-into-a-validation-and-test-set." class="nav-link" data-scroll-target="#split-the-training-data-into-a-validation-and-test-set.">Split the training data into a validation and test set.</a></li>
+  <li><a href="#run-the-same-linear-model-on-this-new-data" id="toc-run-the-same-linear-model-on-this-new-data" class="nav-link" data-scroll-target="#run-the-same-linear-model-on-this-new-data">Run the same linear model on this new data</a></li>
+  <li><a href="#custom-model-weights" id="toc-custom-model-weights" class="nav-link" data-scroll-target="#custom-model-weights">Custom model weights</a></li>
+  <li><a href="#loss-function-and-optimizer" id="toc-loss-function-and-optimizer" class="nav-link" data-scroll-target="#loss-function-and-optimizer">Loss function and optimizer</a></li>
+  <li><a href="#training-loop" id="toc-training-loop" class="nav-link" data-scroll-target="#training-loop">Training Loop</a></li>
+  <li><a href="#make-a-general-training-loop-for-the-rest-of-the-experiments" id="toc-make-a-general-training-loop-for-the-rest-of-the-experiments" class="nav-link" data-scroll-target="#make-a-general-training-loop-for-the-rest-of-the-experiments">Make a general training loop for the rest of the experiments</a></li>
+  <li><a href="#interpreting-these-loss-curves" id="toc-interpreting-these-loss-curves" class="nav-link" data-scroll-target="#interpreting-these-loss-curves">Interpreting these loss curves</a></li>
+  <li><a href="#providing-the-model-with-access-to-the-missing-feature." id="toc-providing-the-model-with-access-to-the-missing-feature." class="nav-link" data-scroll-target="#providing-the-model-with-access-to-the-missing-feature.">Providing the model with access to the missing feature.</a></li>
+  <li><a href="#feature-crosses" id="toc-feature-crosses" class="nav-link" data-scroll-target="#feature-crosses">Feature Crosses</a></li>
+  <li><a href="#calculate-the-new-feature" id="toc-calculate-the-new-feature" class="nav-link" data-scroll-target="#calculate-the-new-feature">Calculate the new feature</a></li>
+  <li><a href="#what-does-unsqueeze-do" id="toc-what-does-unsqueeze-do" class="nav-link" data-scroll-target="#what-does-unsqueeze-do">What does unsqueeze do?</a></li>
+  <li><a href="#join-the-feature-cross-vector-onto-the-end-of-the-input-x" id="toc-join-the-feature-cross-vector-onto-the-end-of-the-input-x" class="nav-link" data-scroll-target="#join-the-feature-cross-vector-onto-the-end-of-the-input-x">Join the feature cross vector onto the end of the input X</a></li>
+  <li><a href="#well-need-to-extend-the-neural-network-to-take-11-features-instead-of-10.-lets-see-how-this-affects-training." id="toc-well-need-to-extend-the-neural-network-to-take-11-features-instead-of-10.-lets-see-how-this-affects-training." class="nav-link" data-scroll-target="#well-need-to-extend-the-neural-network-to-take-11-features-instead-of-10.-lets-see-how-this-affects-training.">We’ll need to extend the neural network to take 11 features instead of 10. Let’s see how this affects training.</a></li>
+  <li><a href="#split-the-training-data-into-a-validation-and-test-set.-1" id="toc-split-the-training-data-into-a-validation-and-test-set.-1" class="nav-link" data-scroll-target="#split-the-training-data-into-a-validation-and-test-set.-1">Split the training data into a validation and test set.</a></li>
+  <li><a href="#train-the-model" id="toc-train-the-model" class="nav-link" data-scroll-target="#train-the-model">Train the model</a></li>
+  <li><a href="#evaluate-the-model-on-an-unseen-test-set" id="toc-evaluate-the-model-on-an-unseen-test-set" class="nav-link" data-scroll-target="#evaluate-the-model-on-an-unseen-test-set">Evaluate the model on an unseen test set</a></li>
+  <li><a href="#the-model-is-able-to-converge-and-the-loss-curves-look-smooth" id="toc-the-model-is-able-to-converge-and-the-loss-curves-look-smooth" class="nav-link" data-scroll-target="#the-model-is-able-to-converge-and-the-loss-curves-look-smooth">The model is able to converge, and the loss curves look smooth</a></li>
+  <li><a href="#we-can-also-try-to-solve-this-problem-by-introducing-a-nonlinearity-to-the-model." id="toc-we-can-also-try-to-solve-this-problem-by-introducing-a-nonlinearity-to-the-model." class="nav-link" data-scroll-target="#we-can-also-try-to-solve-this-problem-by-introducing-a-nonlinearity-to-the-model.">We can also try to solve this problem by introducing a nonlinearity to the model.</a></li>
+  <li><a href="#make-the-synthetic-dataset-and-split-into-train-and-validation-sets." id="toc-make-the-synthetic-dataset-and-split-into-train-and-validation-sets." class="nav-link" data-scroll-target="#make-the-synthetic-dataset-and-split-into-train-and-validation-sets.">Make the synthetic dataset and split into train and validation sets.</a>
+  <ul class="collapse">
+  <li><a href="#define-a-nonlinear-model" id="toc-define-a-nonlinear-model" class="nav-link" data-scroll-target="#define-a-nonlinear-model">Define a nonlinear model</a></li>
+  </ul></li>
+  <li><a href="#simplify-the-model-to-represent-yx2" id="toc-simplify-the-model-to-represent-yx2" class="nav-link" data-scroll-target="#simplify-the-model-to-represent-yx2">Simplify the model to represent <span class="math inline">\(y=x^2\)</span></a>
+  <ul class="collapse">
+  <li><a href="#make-the-synthetic-dataset" id="toc-make-the-synthetic-dataset" class="nav-link" data-scroll-target="#make-the-synthetic-dataset">Make the synthetic dataset</a></li>
+  </ul></li>
+  <li><a href="#split-the-dataset-into-train-and-validation-sets." id="toc-split-the-dataset-into-train-and-validation-sets." class="nav-link" data-scroll-target="#split-the-dataset-into-train-and-validation-sets.">Split the dataset into train and validation sets.</a>
+  <ul class="collapse">
+  <li><a href="#define-a-nonlinear-model-1" id="toc-define-a-nonlinear-model-1" class="nav-link" data-scroll-target="#define-a-nonlinear-model-1">Define a nonlinear model</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul class="collapse">
+  <li><a href="#thanks-for-reading" id="toc-thanks-for-reading" class="nav-link" data-scroll-target="#thanks-for-reading">Thanks for reading!</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

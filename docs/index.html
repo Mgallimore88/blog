@@ -70,9 +70,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -142,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
   
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(8)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(8)</span></div><div class="category" data-category="AI">AI <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Bias">Bias <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Binary Crossentropy Loss">Binary Crossentropy Loss <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Boat Classifier">Boat Classifier <span class="quarto-category-count">(1)</span></div><div class="category" data-category="CNN">CNN <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Claude">Claude <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Cosine Similarity">Cosine Similarity <span class="quarto-category-count">(1)</span></div><div class="category" data-category="CrossEntropy">CrossEntropy <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Decision trees">Decision trees <span class="quarto-category-count">(1)</span></div><div class="category" data-category="DeepSeek">DeepSeek <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Embeddings">Embeddings <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ensembling">Ensembling <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Exploration">Exploration <span class="quarto-category-count">(1)</span></div><div class="category" data-category="FastAI">FastAI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Feature Crosses">Feature Crosses <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Image Augmentation">Image Augmentation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Image recognition">Image recognition <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Insurance">Insurance <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Kaggle">Kaggle <span class="quarto-category-count">(1)</span></div><div class="category" data-category="L2 Regularization">L2 Regularization <span class="quarto-category-count">(1)</span></div><div class="category" data-category="LLMs">LLMs <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Latent Factors">Latent Factors <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Learning Rate Finder">Learning Rate Finder <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Linear Equations">Linear Equations <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Neural Networks">Neural Networks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Neural network">Neural network <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Nonlinear Equations">Nonlinear Equations <span class="quarto-category-count">(1)</span></div><div class="category" data-category="PDF">PDF <span class="quarto-category-count">(1)</span></div><div class="category" data-category="PyTorch">PyTorch <span class="quarto-category-count">(2)</span></div><div class="category" data-category="RAG">RAG <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Random Forests">Random Forests <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Reccomender Systems">Reccomender Systems <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SoftMax">SoftMax <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Universal Approximation Theorem">Universal Approximation Theorem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="birdsong">birdsong <span class="quarto-category-count">(2)</span></div><div class="category" data-category="conservation">conservation <span class="quarto-category-count">(2)</span></div><div class="category" data-category="evaluation">evaluation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="fastai">fastai <span class="quarto-category-count">(1)</span></div><div class="category" data-category="probability">probability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="project">project <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
@@ -169,49 +169,51 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-file-modified-sort="1741738796523" data-listing-reading-time-sort="17.02">
-<div class="thumbnail">
-<p><a href="./posts/embeddings/embeddings.html"> <img src="./posts/embeddings/network.jpg" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/embeddings/embeddings.html">
-<h3 class="no-anchor listing-title">
-What is an embedding layer and how does it work?
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-In this example I’ll make a collaborative filtering model (recommender system) which uses an entity embedding as part of a system for recommending books to users.
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/embeddings/embeddings.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-listing-file-modified-sort="1742584097933" data-listing-reading-time-sort="5.21">
+<div class="quarto-post image-right" data-index="0" data-categories="CNN,conservation,AI,birdsong,evaluation" data-listing-date-sort="1742972400000" data-listing-file-modified-sort="1743019837560" data-listing-reading-time-sort="5.21">
 <div class="thumbnail">
 <p><a href="./posts/osfl-project-description/C-Results.html"> <img src="./posts/osfl-project-description/images/airobin.jpg" class="thumnail-image"> </a></p>
 </div>
 <div class="body">
 <a href="./posts/osfl-project-description/C-Results.html">
 <h3 class="no-anchor listing-title">
-CNN Birdsong Classifer Evaluation
+CNN Birdsong Classifier Evaluation
 </h3>
 <div class="listing-subtitle">
 
 </div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('CNN'); return false;">
+CNN
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('conservation'); return false;">
+conservation
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('AI'); return false;">
+AI
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('birdsong'); return false;">
+birdsong
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('evaluation'); return false;">
+evaluation
+</div>
+</div>
+<a href="./posts/osfl-project-description/C-Results.html">
 <div class="listing-description">
 This notebook collates the results of the CNN birdsong detector against different test sets and comparison with a state of the art multi-species model.
 </div>
 </a>
 </div>
 <div class="metadata">
-<a href="./posts/osfl-project-description/C-Results.html"> </a>
+<a href="./posts/osfl-project-description/C-Results.html">
+<div class="listing-date">
+Mar 26, 2025
+</div>
+</a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-listing-file-modified-sort="1742586587919" data-listing-reading-time-sort="12.465">
+<div class="quarto-post image-right" data-index="1" data-categories="CNN,conservation,AI,birdsong,project" data-listing-date-sort="1742972400000" data-listing-file-modified-sort="1743018713188" data-listing-reading-time-sort="12.465">
 <div class="thumbnail">
 <p><a href="./posts/osfl-project-description/B-project-description.html"> <img src="./posts/osfl-project-description/images/osfl-dataset-creation-pipeline.png" class="thumnail-image"> </a></p>
 </div>
@@ -223,58 +225,39 @@ CNN Birdsong Classifier Description
 <div class="listing-subtitle">
 
 </div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('CNN'); return false;">
+CNN
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('conservation'); return false;">
+conservation
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('AI'); return false;">
+AI
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('birdsong'); return false;">
+birdsong
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('project'); return false;">
+project
+</div>
+</div>
+<a href="./posts/osfl-project-description/B-project-description.html">
 <div class="listing-description">
 Process description for the Olive Sided Flycatcher recognizer.
 </div>
 </a>
 </div>
 <div class="metadata">
-<a href="./posts/osfl-project-description/B-project-description.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-listing-file-modified-sort="1741738796542" data-listing-reading-time-sort="17.05">
-<div class="thumbnail">
-<p><a href="./posts/kaggle-insurance-competition/insurance_competition.html"> <img src="./posts/kaggle-insurance-competition/rf.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/kaggle-insurance-competition/insurance_competition.html">
-<h3 class="no-anchor listing-title">
-Kaggle insurance competition 2024
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-This notebook trains a random forest model to predict car insurance premium for a given customer.
+<a href="./posts/osfl-project-description/B-project-description.html">
+<div class="listing-date">
+Mar 26, 2025
 </div>
 </a>
 </div>
-<div class="metadata">
-<a href="./posts/kaggle-insurance-competition/insurance_competition.html"> </a>
 </div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-listing-file-modified-sort="1741738796510" data-listing-reading-time-sort="12.17">
-<div class="thumbnail">
-<p><a href="./posts/BCE-model/BCEmodel.html"> <img src="./posts/BCE-model/leaves.jpg" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/BCE-model/BCEmodel.html">
-</a><h3 class="no-anchor listing-title"><a href="./posts/BCE-model/BCEmodel.html">
-Building a boat recognizer using the </a><a href="https://github.com/fastai/fastbook/blob/master/02_production.ipynb">fast.ai</a> library
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-In this notebook we build and train a convolutional neural network…
-</div>
-
-</div>
-<div class="metadata">
-<a href="./posts/BCE-model/BCEmodel.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-listing-file-modified-sort="1742586524396" data-listing-reading-time-sort="3.455">
+<div class="quarto-post image-right" data-index="2" data-categories="RAG,DeepSeek,LLMs,Claude" data-listing-date-sort="1737705600000" data-listing-file-modified-sort="1743019140053" data-listing-reading-time-sort="3.455">
 <div class="thumbnail">
 <p><a href="./posts/RAG/RAG.html"> <img src="./posts/RAG/rag-tree.webp" class="thumnail-image"> </a></p>
 </div>
@@ -286,55 +269,280 @@ Simple RAG Example
 <div class="listing-subtitle">
 
 </div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('RAG'); return false;">
+RAG
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('DeepSeek'); return false;">
+DeepSeek
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('LLMs'); return false;">
+LLMs
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Claude'); return false;">
+Claude
+</div>
+</div>
+<a href="./posts/RAG/RAG.html">
 <div class="listing-description">
 Thank you Ben Clavié for getting me started on this path.
 </div>
 </a>
 </div>
 <div class="metadata">
-<a href="./posts/RAG/RAG.html"> </a>
+<a href="./posts/RAG/RAG.html">
+<div class="listing-date">
+Jan 24, 2025
+</div>
+</a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="6" data-listing-file-modified-sort="1741738796549" data-listing-reading-time-sort="11.78">
+<div class="quarto-post image-right" data-index="3" data-categories="Decision trees,Neural network,Ensembling,Insurance,Kaggle,Random Forests,FastAI" data-listing-date-sort="1733040000000" data-listing-file-modified-sort="1743020245435" data-listing-reading-time-sort="17.05">
+<div class="thumbnail">
+<p><a href="./posts/kaggle-insurance-competition/insurance_competition.html"> <img src="./posts/kaggle-insurance-competition/rf.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/kaggle-insurance-competition/insurance_competition.html">
+<h3 class="no-anchor listing-title">
+Random Forests for insurance premium prediction
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Decision trees'); return false;">
+Decision trees
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Neural network'); return false;">
+Neural network
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Ensembling'); return false;">
+Ensembling
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Insurance'); return false;">
+Insurance
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Kaggle'); return false;">
+Kaggle
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Random Forests'); return false;">
+Random Forests
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('FastAI'); return false;">
+FastAI
+</div>
+</div>
+<a href="./posts/kaggle-insurance-competition/insurance_competition.html">
+<div class="listing-description">
+This notebook trains a random forest model to predict car insurance premium for a given customer.
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/kaggle-insurance-competition/insurance_competition.html">
+<div class="listing-date">
+Dec 1, 2024
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="4" data-categories="Embeddings,Reccomender Systems,AI,PyTorch,fastai,Bias,L2 Regularization,Latent Factors,Cosine Similarity" data-listing-date-sort="1710918000000" data-listing-file-modified-sort="1743020402962" data-listing-reading-time-sort="17.02">
+<div class="thumbnail">
+<p><a href="./posts/embeddings/embeddings.html"> <img src="./posts/embeddings/network.jpg" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/embeddings/embeddings.html">
+<h3 class="no-anchor listing-title">
+Training a book reccomendation system using entity embeddings
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Embeddings'); return false;">
+Embeddings
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Reccomender Systems'); return false;">
+Reccomender Systems
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('AI'); return false;">
+AI
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('PyTorch'); return false;">
+PyTorch
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('fastai'); return false;">
+fastai
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Bias'); return false;">
+Bias
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('L2 Regularization'); return false;">
+L2 Regularization
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Latent Factors'); return false;">
+Latent Factors
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Cosine Similarity'); return false;">
+Cosine Similarity
+</div>
+</div>
+<a href="./posts/embeddings/embeddings.html">
+<div class="listing-description">
+In this example I’ll make a collaborative filtering model (recommender system) which uses an entity embedding as part of a system for recommending books to users.
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/embeddings/embeddings.html">
+<div class="listing-date">
+Mar 20, 2024
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="5" data-categories="Boat Classifier,CNN,Image recognition,Binary Crossentropy Loss,SoftMax,CrossEntropy,AI,Image Augmentation,Learning Rate Finder" data-listing-date-sort="1676880000000" data-listing-file-modified-sort="1743020777258" data-listing-reading-time-sort="12.17">
+<div class="thumbnail">
+<p><a href="./posts/BCE-model/BCEmodel.html"> <img src="./posts/BCE-model/leaves.jpg" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/BCE-model/BCEmodel.html">
+<h3 class="no-anchor listing-title">
+Boat detector: Multi-Class vs Single-class Image Classification
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Boat Classifier'); return false;">
+Boat Classifier
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('CNN'); return false;">
+CNN
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Image recognition'); return false;">
+Image recognition
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Binary Crossentropy Loss'); return false;">
+Binary Crossentropy Loss
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('SoftMax'); return false;">
+SoftMax
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('CrossEntropy'); return false;">
+CrossEntropy
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('AI'); return false;">
+AI
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Image Augmentation'); return false;">
+Image Augmentation
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Learning Rate Finder'); return false;">
+Learning Rate Finder
+</div>
+</div>
+<a href="./posts/BCE-model/BCEmodel.html">
+<div class="listing-description">
+In this notebook we build and train a convolutional neural network…
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/BCE-model/BCEmodel.html">
+<div class="listing-date">
+Feb 20, 2023
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="6" data-categories="Universal Approximation Theorem,PyTorch,Feature Crosses,Neural Networks,Linear Equations,Nonlinear Equations" data-listing-date-sort="1675238400000" data-listing-file-modified-sort="1743020131740" data-listing-reading-time-sort="11.78">
 <div class="thumbnail">
 <p><a href="./posts/linear-nonlinear-neuralnet/linear-nonlinear-neuralnet.html"> <img src="./posts/linear-nonlinear-neuralnet/squeeze.png" class="thumnail-image"> </a></p>
 </div>
 <div class="body">
 <a href="./posts/linear-nonlinear-neuralnet/linear-nonlinear-neuralnet.html">
 <h3 class="no-anchor listing-title">
-Exploring the capability of neural networks to solve simple linear and nonlinear algebraic equations.
+Solving linear and nonlinear equations with neural networks
 </h3>
 <div class="listing-subtitle">
 
 </div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Universal Approximation Theorem'); return false;">
+Universal Approximation Theorem
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('PyTorch'); return false;">
+PyTorch
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Feature Crosses'); return false;">
+Feature Crosses
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Neural Networks'); return false;">
+Neural Networks
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Linear Equations'); return false;">
+Linear Equations
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Nonlinear Equations'); return false;">
+Nonlinear Equations
+</div>
+</div>
+<a href="./posts/linear-nonlinear-neuralnet/linear-nonlinear-neuralnet.html">
 <div class="listing-description">
 Topics covered: - PyTorch - Feature Crosses - Linear and nonlinear models - universal approximation theorem - interpreting loss curves
 </div>
 </a>
 </div>
 <div class="metadata">
-<a href="./posts/linear-nonlinear-neuralnet/linear-nonlinear-neuralnet.html"> </a>
+<a href="./posts/linear-nonlinear-neuralnet/linear-nonlinear-neuralnet.html">
+<div class="listing-date">
+Feb 1, 2023
+</div>
+</a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="7" data-listing-file-modified-sort="1741738796594" data-listing-reading-time-sort="1.485">
+<div class="quarto-post image-right" data-index="7" data-categories="Exploration,probability,PDF" data-listing-date-sort="1673769600000" data-listing-file-modified-sort="1743020866665" data-listing-reading-time-sort="1.485">
 <div class="thumbnail">
 <p><a href="./posts/probability-distributions/Probability.html"> <img src="./posts/probability-distributions/dice.jpg" class="thumnail-image"> </a></p>
 </div>
 <div class="body">
 <a href="./posts/probability-distributions/Probability.html">
 <h3 class="no-anchor listing-title">
-Exploring probability distributions
+Probability Distributions
 </h3>
 <div class="listing-subtitle">
 
 </div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Exploration'); return false;">
+Exploration
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+probability
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('PDF'); return false;">
+PDF
+</div>
+</div>
+<a href="./posts/probability-distributions/Probability.html">
 <div class="listing-description">
 What happens when we add two sets of data with rectangular probability distributions?
 </div>
 </a>
 </div>
 <div class="metadata">
-<a href="./posts/probability-distributions/Probability.html"> </a>
+<a href="./posts/probability-distributions/Probability.html">
+<div class="listing-date">
+Jan 15, 2023
+</div>
+</a>
 </div>
 </div>
 </div>

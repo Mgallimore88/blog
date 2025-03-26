@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-02-20">
 
-<title>MG ML – bcemodel</title>
+<title>MG ML - Boat detector: Multi-Class vs Single-class Image Classification</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -130,7 +131,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -172,12 +173,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Boat detector: Multi-Class vs Single-class Image Classification</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Boat Classifier</div>
+                <div class="quarto-category">CNN</div>
+                <div class="quarto-category">Image recognition</div>
+                <div class="quarto-category">Binary Crossentropy Loss</div>
+                <div class="quarto-category">SoftMax</div>
+                <div class="quarto-category">CrossEntropy</div>
+                <div class="quarto-category">AI</div>
+                <div class="quarto-category">Image Augmentation</div>
+                <div class="quarto-category">Learning Rate Finder</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 20, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#building-a-boat-recognizer-using-the-fast.ai-library" id="toc-building-a-boat-recognizer-using-the-fast.ai-library" class="nav-link active" data-scroll-target="#building-a-boat-recognizer-using-the-fast.ai-library">Building a boat recognizer using the </a><a href="https://github.com/fastai/fastbook/blob/master/02_production.ipynb" class="nav-link" data-scroll-target="https\://github.com/fastai/fastbook/blob/master/02_production.ipynb">fast.ai</a> library</li>
+  <li><a href="#install-required-libraries" id="toc-install-required-libraries" class="nav-link" data-scroll-target="#install-required-libraries">Install required libraries</a></li>
+  <li><a href="#imports" id="toc-imports" class="nav-link" data-scroll-target="#imports">Imports</a>
+  <ul class="collapse">
+  <li><a href="#choose-a-set-of-categories-for-the-classification-model" id="toc-choose-a-set-of-categories-for-the-classification-model" class="nav-link" data-scroll-target="#choose-a-set-of-categories-for-the-classification-model">Choose a set of categories for the classification model</a></li>
+  </ul></li>
+  <li><a href="#clean-out-any-corrupt-images-from-the-dataset" id="toc-clean-out-any-corrupt-images-from-the-dataset" class="nav-link" data-scroll-target="#clean-out-any-corrupt-images-from-the-dataset">Clean out any corrupt images from the dataset</a>
+  <ul class="collapse">
+  <li><a href="#some-of-the-terminology-in-pytorch-fastai-can-be-confusing.-they-can-have-similar-names-which-mean-very-specific-things.-here-are-some-definintions" id="toc-some-of-the-terminology-in-pytorch-fastai-can-be-confusing.-they-can-have-similar-names-which-mean-very-specific-things.-here-are-some-definintions" class="nav-link" data-scroll-target="#some-of-the-terminology-in-pytorch-fastai-can-be-confusing.-they-can-have-similar-names-which-mean-very-specific-things.-here-are-some-definintions">Some of the terminology in PyTorch fastai can be confusing. They can have similar names which mean very specific things. Here are some definintions</a></li>
+  <li><a href="#use-the-fastai-datablock-to-create-a-way-to-load-datasets-and-dataloaders" id="toc-use-the-fastai-datablock-to-create-a-way-to-load-datasets-and-dataloaders" class="nav-link" data-scroll-target="#use-the-fastai-datablock-to-create-a-way-to-load-datasets-and-dataloaders">Use the fastai DataBlock to create a way to load datasets and dataloaders</a></li>
+  <li><a href="#training-and-validation-sets" id="toc-training-and-validation-sets" class="nav-link" data-scroll-target="#training-and-validation-sets">Training and validation sets</a></li>
+  </ul></li>
+  <li><a href="#item-transformations-to-reduce-over-fitting." id="toc-item-transformations-to-reduce-over-fitting." class="nav-link" data-scroll-target="#item-transformations-to-reduce-over-fitting.">Item transformations to reduce over-fitting.</a></li>
+  <li><a href="#train-a-model" id="toc-train-a-model" class="nav-link" data-scroll-target="#train-a-model">Train a model</a>
+  <ul class="collapse">
+  <li><a href="#pre-trained-models." id="toc-pre-trained-models." class="nav-link" data-scroll-target="#pre-trained-models.">Pre-trained models.</a></li>
+  <li><a href="#metrics" id="toc-metrics" class="nav-link" data-scroll-target="#metrics">Metrics</a></li>
+  <li><a href="#loss" id="toc-loss" class="nav-link" data-scroll-target="#loss">Loss</a></li>
+  </ul></li>
+  <li><a href="#confusion-matrix" id="toc-confusion-matrix" class="nav-link" data-scroll-target="#confusion-matrix">Confusion matrix</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data cleaning</a></li>
+  <li><a href="#re-train-model-with-better-data" id="toc-re-train-model-with-better-data" class="nav-link" data-scroll-target="#re-train-model-with-better-data">Re train model with better data</a></li>
+  <li><a href="#still-improving---lets-train-some-more" id="toc-still-improving---lets-train-some-more" class="nav-link" data-scroll-target="#still-improving---lets-train-some-more">Still improving - let’s train some more</a></li>
+  <li><a href="#confusion-matrix-2" id="toc-confusion-matrix-2" class="nav-link" data-scroll-target="#confusion-matrix-2">Confusion matrix 2</a></li>
+  <li><a href="#try-using-progressive-resizing-to-speed-up-training." id="toc-try-using-progressive-resizing-to-speed-up-training." class="nav-link" data-scroll-target="#try-using-progressive-resizing-to-speed-up-training.">Try using progressive resizing to speed up training.</a></li>
+  <li><a href="#progressive-resizing-seems-to-reduce-the-models-performance" id="toc-progressive-resizing-seems-to-reduce-the-models-performance" class="nav-link" data-scroll-target="#progressive-resizing-seems-to-reduce-the-models-performance">Progressive resizing seems to reduce the model’s performance</a></li>
+  <li><a href="#using-the-model-to-predict-on-unseen-data." id="toc-using-the-model-to-predict-on-unseen-data." class="nav-link" data-scroll-target="#using-the-model-to-predict-on-unseen-data.">Using the model to predict on unseen data.</a></li>
+  <li><a href="#that-looks-pretty-good.-lets-try-some-more-images" id="toc-that-looks-pretty-good.-lets-try-some-more-images" class="nav-link" data-scroll-target="#that-looks-pretty-good.-lets-try-some-more-images">That looks pretty good. Let’s try some more images</a>
+  <ul class="collapse">
+  <li><a href="#great-again-we-got-a-sensible-preciction-of-88-probability-of-a-canoe." id="toc-great-again-we-got-a-sensible-preciction-of-88-probability-of-a-canoe." class="nav-link" data-scroll-target="#great-again-we-got-a-sensible-preciction-of-88-probability-of-a-canoe.">Great, again we got a sensible preciction of 88% probability of a canoe.</a></li>
+  </ul></li>
+  <li><a href="#this-result-doesnt-make-sense" id="toc-this-result-doesnt-make-sense" class="nav-link" data-scroll-target="#this-result-doesnt-make-sense">This result doesn’t make sense!</a></li>
+  <li><a href="#softmax-function" id="toc-softmax-function" class="nav-link" data-scroll-target="#softmax-function">softmax function</a></li>
+  <li><a href="#cross-entopy-loss-is-softmax-combined-with-log-likelihood." id="toc-cross-entopy-loss-is-softmax-combined-with-log-likelihood." class="nav-link" data-scroll-target="#cross-entopy-loss-is-softmax-combined-with-log-likelihood.">Cross entopy loss is softmax combined with log likelihood.</a></li>
+  <li><a href="#how-does-all-this-affect-the-training-process" id="toc-how-does-all-this-affect-the-training-process" class="nav-link" data-scroll-target="#how-does-all-this-affect-the-training-process">How does all this affect the training process?</a></li>
+  <li><a href="#binary-crossentropy-loss" id="toc-binary-crossentropy-loss" class="nav-link" data-scroll-target="#binary-crossentropy-loss">Binary crossentropy loss</a>
+  <ul class="collapse">
+  <li><a href="#first-we-need-to-create-a-function-to-get-the-label" id="toc-first-we-need-to-create-a-function-to-get-the-label" class="nav-link" data-scroll-target="#first-we-need-to-create-a-function-to-get-the-label">First we need to create a function to get the label</a></li>
+  </ul></li>
+  <li><a href="#using-16-bit-floating-point-type" id="toc-using-16-bit-floating-point-type" class="nav-link" data-scroll-target="#using-16-bit-floating-point-type">Using 16 bit floating point type</a></li>
+  <li><a href="#weve-reached-87-accuracy-with-our-binary-cross-entropy-model." id="toc-weve-reached-87-accuracy-with-our-binary-cross-entropy-model." class="nav-link" data-scroll-target="#weve-reached-87-accuracy-with-our-binary-cross-entropy-model.">We’ve reached 87% accuracy with our Binary Cross Entropy model.</a></li>
+  <li><a href="#now-we-can-check-whether-the-model-makes-more-sensible-predictions-for-unseen-training-items" id="toc-now-we-can-check-whether-the-model-makes-more-sensible-predictions-for-unseen-training-items" class="nav-link" data-scroll-target="#now-we-can-check-whether-the-model-makes-more-sensible-predictions-for-unseen-training-items">Now we can check whether the model makes more sensible predictions for unseen training items</a></li>
+  <li><a href="#that-looks-pretty-good." id="toc-that-looks-pretty-good." class="nav-link" data-scroll-target="#that-looks-pretty-good.">That looks pretty good.</a></li>
+  <li><a href="#no-class-predicted-our-image-recognition-model-using-binary-crossentropy-works" id="toc-no-class-predicted-our-image-recognition-model-using-binary-crossentropy-works" class="nav-link" data-scroll-target="#no-class-predicted-our-image-recognition-model-using-binary-crossentropy-works">No-class predicted: Our image recognition model using binary crossentropy works!</a></li>
+  <li><a href="#heres-a-summary-of-the-resnet-18-model-architecture." id="toc-heres-a-summary-of-the-resnet-18-model-architecture." class="nav-link" data-scroll-target="#heres-a-summary-of-the-resnet-18-model-architecture.">Here’s a summary of the resnet 18 model architecture.</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#thanks-for-reading" id="toc-thanks-for-reading" class="nav-link" data-scroll-target="#thanks-for-reading">Thanks for reading :)</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

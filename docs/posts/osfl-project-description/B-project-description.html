@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-03-26">
 
-<title>MG ML – b-project-description</title>
+<title>MG ML - CNN Birdsong Classifier Description</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,7 +64,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -105,12 +106,71 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">CNN Birdsong Classifier Description</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">CNN</div>
+                <div class="quarto-category">conservation</div>
+                <div class="quarto-category">AI</div>
+                <div class="quarto-category">birdsong</div>
+                <div class="quarto-category">project</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 26, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#cnn-birdsong-classifier-description" id="toc-cnn-birdsong-classifier-description" class="nav-link active" data-scroll-target="#cnn-birdsong-classifier-description">CNN Birdsong Classifier Description</a>
+  <ul class="collapse">
+  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">Approach</a>
+  <ul class="collapse">
+  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source">Data source</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#model-training." id="toc-model-training." class="nav-link" data-scroll-target="#model-training.">Model Training.</a>
+  <ul class="collapse">
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">1. Data cleaning</a></li>
+  <li><a href="#data-labelling" id="toc-data-labelling" class="nav-link" data-scroll-target="#data-labelling">2. Data labelling</a></li>
+  <li><a href="#train---validation---test-split" id="toc-train---validation---test-split" class="nav-link" data-scroll-target="#train---validation---test-split">Train - Validation - Test split</a></li>
+  <li><a href="#train-an-initial-model" id="toc-train-an-initial-model" class="nav-link" data-scroll-target="#train-an-initial-model">Train an initial model</a></li>
+  <li><a href="#label-verification-and-inclusion-of-edge-cases" id="toc-label-verification-and-inclusion-of-edge-cases" class="nav-link" data-scroll-target="#label-verification-and-inclusion-of-edge-cases">Label verification and inclusion of edge cases</a></li>
+  <li><a href="#custom-label-verification-process" id="toc-custom-label-verification-process" class="nav-link" data-scroll-target="#custom-label-verification-process">Custom label verification process</a></li>
+  <li><a href="#train-a-second-model" id="toc-train-a-second-model" class="nav-link" data-scroll-target="#train-a-second-model">Train a second model</a></li>
+  <li><a href="#focal-example-retrieval" id="toc-focal-example-retrieval" class="nav-link" data-scroll-target="#focal-example-retrieval">Focal example retrieval</a></li>
+  <li><a href="#out-of-habitat-examples" id="toc-out-of-habitat-examples" class="nav-link" data-scroll-target="#out-of-habitat-examples">Out of habitat examples</a></li>
+  <li><a href="#final-model-training" id="toc-final-model-training" class="nav-link" data-scroll-target="#final-model-training">Final model training</a></li>
+  <li><a href="#process-diagram-for-dataset-creation-cleaning-and-model-training" id="toc-process-diagram-for-dataset-creation-cleaning-and-model-training" class="nav-link" data-scroll-target="#process-diagram-for-dataset-creation-cleaning-and-model-training">Process diagram for dataset creation, cleaning and model training</a></li>
+  </ul></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 

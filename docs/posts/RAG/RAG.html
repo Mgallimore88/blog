@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-01-24">
 
-<title>MG ML – rag</title>
+<title>MG ML - Simple RAG Example</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -126,7 +127,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -168,12 +169,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Simple RAG Example</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">RAG</div>
+                <div class="quarto-category">DeepSeek</div>
+                <div class="quarto-category">LLMs</div>
+                <div class="quarto-category">Claude</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 24, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#simple-rag-example" id="toc-simple-rag-example" class="nav-link active" data-scroll-target="#simple-rag-example">Simple RAG Example</a>
+  <ul class="collapse">
+  <li><a href="#retreival-augmented-generation" id="toc-retreival-augmented-generation" class="nav-link" data-scroll-target="#retreival-augmented-generation">Retreival Augmented Generation</a></li>
+  <li><a href="#fetch-some-text-content-and-embed-it" id="toc-fetch-some-text-content-and-embed-it" class="nav-link" data-scroll-target="#fetch-some-text-content-and-embed-it">Fetch some text content and embed it</a></li>
+  <li><a href="#choose-which-chunks-to-split-the-document-into" id="toc-choose-which-chunks-to-split-the-document-into" class="nav-link" data-scroll-target="#choose-which-chunks-to-split-the-document-into">Choose which chunks to split the document into</a></li>
+  <li><a href="#the-embedding-has-768-dimensions." id="toc-the-embedding-has-768-dimensions." class="nav-link" data-scroll-target="#the-embedding-has-768-dimensions.">The embedding has 768 dimensions.</a></li>
+  <li><a href="#make-an-embedding-of-the-prompt-query" id="toc-make-an-embedding-of-the-prompt-query" class="nav-link" data-scroll-target="#make-an-embedding-of-the-prompt-query">Make an embedding of the prompt (query)</a></li>
+  </ul></li>
+  <li><a href="#improvements" id="toc-improvements" class="nav-link" data-scroll-target="#improvements">Improvements</a></li>
+  <li><a href="#running-deepseek-locally-without-sending-data-to-the-cloud" id="toc-running-deepseek-locally-without-sending-data-to-the-cloud" class="nav-link" data-scroll-target="#running-deepseek-locally-without-sending-data-to-the-cloud">Running DeepSeek locally without sending data to the cloud</a>
+  <ul class="collapse">
+  <li><a href="#thanks-for-reading-let-me-know-if-you-have-any-questions-or-if-your-company-would-like-a-rag-system-implemented" id="toc-thanks-for-reading-let-me-know-if-you-have-any-questions-or-if-your-company-would-like-a-rag-system-implemented" class="nav-link" data-scroll-target="#thanks-for-reading-let-me-know-if-you-have-any-questions-or-if-your-company-would-like-a-rag-system-implemented">Thanks for reading! Let me know if you have any questions or if your company would like a RAG system implemented 😉</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
